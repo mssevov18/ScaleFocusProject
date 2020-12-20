@@ -29,7 +29,7 @@ void printTable(Code sln, Code guess[], unsigned short int lives, wstring lastIn
 	wcout << L"┃   Position   ┃   ┃   Two's      ┃   ┃   only       ┃\n";
 	wcout << L"┃   & numbers  ┃   ┃   Guesses    ┃   ┃   numbers    ┃\n";
 	wcout << L"┣━━━━━━━━━━━━━━┫   ┣━━━━━━━━━━━━━━┫   ┣━━━━━━━━━━━━━━┫\n";
-	for (unsigned short int i = 0; i < 13 - lives; i++) //Maybe add a counter to pl2's guesses?
+ 	for (unsigned short int i = 0; i < 13 - lives; i++) //Maybe add a counter to pl2's guesses?
 	{
 		wcout << L"┃  ";
 		SetConsoleTextAttribute(hConsole, 10);
@@ -96,10 +96,6 @@ void printTable(Code sln, Code guess[], unsigned short int lives, wstring lastIn
 ┃  ●  ●  ●  ●  ┃   ┃  n  n  n  n  ┃   ┃  ■  ■  ■  ■  ┃
 ┃              ┃   ┃              ┃   ┃              ┃
 ┗━━━━━━━━━━━━━━┛   ┗━━━━━━━━━━━━━━┛   ┗━━━━━━━━━━━━━━┛
-
-
-
-
 
 
 

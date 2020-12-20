@@ -1,7 +1,7 @@
 #pragma once
 
 #include "windows.h"
-#include<vector>
+#include <vector>
 
 using namespace std;
 

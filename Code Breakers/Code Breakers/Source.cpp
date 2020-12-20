@@ -50,7 +50,6 @@
 //Preprocessor directives, Using, Global Variables         |
 #include <iostream>
 #include <vector>
-#include <thread>
 #include "windows.h"
 #include "io.h"
 #include "fcntl.h"
@@ -73,7 +72,7 @@ int main()
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, 7);
 
-	unsigned short int gameStatus = 0; //0 - in game, 1 - winforp1, 2 - winforp2, 3 - forfeit
+	unsigned short int gameStatus = 4; //4 - pl1 input, 0 - in game, 1 - winforp1, 2 - winforp2, 3 - forfeit
 	bool NumAndPos[14][4], Num[14][4];
 
 	for (size_t i = 0; i < 4; i++) //Num and pos init
@@ -89,11 +88,43 @@ int main()
 	wstring tempStr = L"", lastInput = L"";
 	char sym;
 
+	
 	SetConsoleTextAttribute(hConsole, 7);
-	wcout << L"Choose the code...";
-	putinUnSInt(input);
-	for (unsigned short int i = 0; i < 4; i++)
-		sln.digits[i] = Byte(breakIntoDigit(input, i) + 48);
+	while (gameStatus == 4)
+	{
+		system("CLS");
+		//get user1 input
+		wcout << L"Choose the code (4 symbols): " << lastInput;
+		sym = _getch();
+		switch (sym)
+		{
+		case 8: //Backspace -> removes the last char of the cheat code
+			tempStr = lastInput;
+			lastInput = tempStr.substr(0, tempStr.size() - 1);
+			break;
+		case 27: //Escape -> quits the program
+			lastInput = L"";
+			break;
+		case 13: //Enter!
+			sln.digits[0] = Byte(lastInput[0]);
+			sln.digits[1] = Byte(lastInput[1]);
+			sln.digits[2] = Byte(lastInput[2]);
+			sln.digits[3] = Byte(lastInput[3]);
+			lastInput = L"";
+			gameStatus = 0; 
+			break;
+		default:
+			if (sym >= 32)
+				lastInput += sym;
+			break;
+		}
+	}
+
+
+	//Old method of getting pl1 input - not gud
+	//putinUnSInt(input);
+	//for (unsigned short int i = 0; i < 4; i++)
+	//	sln.digits[i] = Byte(breakIntoDigit(input, i) + 48);
 
 	//wcout << L"\x1b[1A";
 
@@ -155,7 +186,8 @@ int main()
 					if (lastInput[j] == tempStr[i] and i == j)
 					{
 						NumAndPos[13 - lives][count++] = true;
-						lastInput[j] = L'!';
+						lastInput[j] = NULL;
+						tempStr[i] = NULL;
 						break;
 					}
 				}
@@ -166,13 +198,14 @@ int main()
 			{
 				for (size_t j = 0; j < 4; j++)
 				{
-					if (lastInput[j] == L'!')
+					if (lastInput[j] == NULL)
 						continue;
 
 					if (lastInput[j] == tempStr[i])
 					{
 						Num[13 - lives][count++] = true;
-						lastInput[j] = L'!';
+						lastInput[j] = NULL;
+						tempStr[i] = NULL;
 					}
 				}
 			}
@@ -199,7 +232,7 @@ int main()
 		wcout << L"\nPLAYER 2 WINS!";
 		break;
 	case 3:
-		wcout << L"\nA PLAYER FOREFEITED!";
+		wcout << L"\nA PLAYER FORFEITED!";
 		break;
 	default:
 		break;
