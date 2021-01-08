@@ -1,8 +1,8 @@
 ﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\
-|*	Sprint: 1																		   *|
-|*	Current Branch: Sprint-1-Understanding-the-assignment-(from-09.12-till-13.12)	   *|
-|*	Ver: 0.1.2																		   *|
-|*	Current Stage: General Architecture of the project								   *|
+|*	Sprint: 2																		   *|
+|*	Current Branch: Sprint-2-Making-the-game-(from-21.12.2020-till-03.01.2021)		   *|
+|*	Ver: 0.2.3																		   *|
+|*	Current Stage: Optimisation of game mechanics									   *|
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /* * * * * * * * * * * * * * * * * * * *\
@@ -15,17 +15,25 @@
 \* * * * * * * * * * * * * * * * * * * */
 
 /* * * * * * * * * * * * * * * * * * *\
+|*                                   *|
 |*          TODO                     *|
 |*                                   *|
-|* 1. Make functions to check pl in- *|
-|*    put.                           *|
+|* 2. Make a main menu               *|
 |*                                   *|
+|* 3. Make the different modes       *|
+|*                                   *|
+|* 4. Make the bot                   *|
+|*                                   *|
+|* 5. Clean up the code              *|
+|*  - make comments                  *|
+|*  - rename variables to smt better *|
 |*                                   *|
 |*                                   *|
 |*                                   *|
 \* * * * * * * * * * * * * * * * * * */
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * *\
+|*                                                       *|
 |* 1. German -> cin code (4 digit integer)               *|
 |*                                                       *|
 |* 2. Allies -> try to guess code                        *|
@@ -43,13 +51,14 @@
 |*                -with repeating digits                 *|
 |*                                                       *|
 |*                                                       *|
-|*                                                       *|
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
 //Preprocessor directives, Using, Global Variables         |
 #include <iostream>
 #include <vector>
+#include <stdlib.h>
+#include <time.h>
 #include "windows.h"
 #include "io.h"
 #include "fcntl.h"
@@ -62,69 +71,105 @@ using namespace std;
 //Function Declaration                                     |
 
 //Main                                                     |
-
 int main()
 {
+	//Sets the seed
+	srand(time(NULL));
+
+	//Sets up the cli to work with unicode
 	int a = _setmode(_fileno(stdout), _O_U16TEXT);
 	a = _setmode(_fileno(stdin), _O_U16TEXT);
 
+	//Sets up the cli to work with colored text
 	HANDLE  hConsole;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, 7);
 
-	unsigned short int gameStatus = 4; //4 - pl1 input, 0 - in game, 1 - winforp1, 2 - winforp2, 3 - forfeit
+	/*
+	0 - in game,
+	1 - winforp1,
+	2 - winforp2,
+	3 - forfeit,
+	4 - pl1 input,
+	5 - Start menu,
+	6 - Settings menu,
+	7 - Pause screen
+	*/
+	unsigned short int gameStatus = 4; 
+	unsigned short int lives = 13, size = 0;
+	
+	/*Settings*/
+	unsigned short int mode = 0;
+	bool symbolsCanRepeat = false;
+	bool vsBot = true;
+
 	bool NumAndPos[14][4], Num[14][4];
+
+	Code sln, guess[14];
+
+	wstring tempStr = L"", lastInput = L"", inputFilter = L"";
+	char tempChar;
+	wchar_t tempWChar2 = NULL;
 
 	for (size_t i = 0; i < 4; i++) //Num and pos init
 	{
 		NumAndPos[0][i] = false;
 		Num[0][i] = false;
 	}
-
-	unsigned short int lives = 13, input, size = 0;
-	
-	Code sln, guess[14];
-
-	wstring tempStr = L"", lastInput = L"";
-	char sym;
-
 	
 	SetConsoleTextAttribute(hConsole, 7);
-	while (gameStatus == 4)
+	system("CLS");
+	//prettify this
+	wcout << L"Choose the mode:\n1 - Numbers 0 to 7;\n2 - All numbers;\n3 - All lowercase letters;\n4 - All uppercase letters;\n5 - All letters;\n6 - All numbers and only lowercase letters;\n7 - All numbers and only uppercase letters;\n8 - All numbers and all letters;\n";
+	mode = verifyUnSIntInRange(1, 8);
+	mode--;
+
+	//prettify this
+	wcout << L"\nCan a symbol be repeated (1/0): ";
+	wcin >> symbolsCanRepeat;
+
+	//prettify this
+	wcout << L"\nPlay against a bot (1/0): ";
+	wcin >> vsBot;
+
+	inputFilter = getInputFilter(mode);
+	
+	if (vsBot)
 	{
-		system("CLS");
-		//get user1 input
-		wcout << L"Choose the code (4 symbols): " << lastInput;
-		sym = _getch();
-		switch (sym)
+		sln = wstringToCode(getBotInput(inputFilter));
+		gameStatus = 0;
+	}
+	else
+	{
+		while (gameStatus == 4)
 		{
-		case 8: //Backspace -> removes the last char of the cheat code
-			tempStr = lastInput;
-			lastInput = tempStr.substr(0, tempStr.size() - 1);
-			break;
-		case 27: //Escape -> quits the program
-			lastInput = L"";
-			break;
-		case 13: //Enter!
-			sln.digits[0] = Byte(lastInput[0]);
-			sln.digits[1] = Byte(lastInput[1]);
-			sln.digits[2] = Byte(lastInput[2]);
-			sln.digits[3] = Byte(lastInput[3]);
-			lastInput = L"";
-			gameStatus = 0; 
-			break;
-		default:
-			if (sym >= 32)
-				lastInput += sym;
-			break;
+			system("CLS");
+			//get user1 input
+			wcout << L"Choose the code (4 symbols): " << lastInput;
+			tempChar = _getch();
+			switch (tempChar)
+			{
+			case 8: //Backspace -> removes the last char of the cheat code
+				tempStr = lastInput;
+				lastInput = tempStr.substr(0, tempStr.size() - 1);
+				break;
+			case 27: //Escape -> quits the program
+				lastInput = L"";
+				break;
+			case 13: //Enter!
+				sln = wstringToCode(lastInput);
+				lastInput = L"";
+				gameStatus = 0;
+				break;
+			default:
+				tempWChar2 = checkIfInputIsAllowed(tempChar, inputFilter, mode);
+				if (tempChar >= 32 and tempWChar2 != NULL and checkIfInputIsUnique(tempChar, lastInput, symbolsCanRepeat))
+					lastInput += tempWChar2;
+				tempWChar2 = NULL;
+				break;
+			}
 		}
 	}
-
-
-	//Old method of getting pl1 input - not gud
-	//putinUnSInt(input);
-	//for (unsigned short int i = 0; i < 4; i++)
-	//	sln.digits[i] = Byte(breakIntoDigit(input, i) + 48);
 
 	//wcout << L"\x1b[1A";
 
@@ -134,11 +179,13 @@ int main()
 
 		//print map
 		printTable(sln, guess, lives, lastInput, NumAndPos, Num, !gameStatus, hConsole);
-		
+
+		printInputMode(mode, symbolsCanRepeat, vsBot);
+
 		//get user2 input
 		wcout << "Input guess (" << 13 - lives << "): " << lastInput;
-		sym = _getch();
-		switch (sym)
+		tempChar = _getch();
+		switch (tempChar)
 		{
 		case 8: //Backspace -> removes the last char of the cheat code
 			tempStr = lastInput;
@@ -149,30 +196,24 @@ int main()
 			gameStatus = 3;
 			break;
 		default:
-			if (sym >= 32)
-				lastInput += sym;
+			tempWChar2 = checkIfInputIsAllowed(tempChar, inputFilter, mode);
+			if (tempChar >= 32 and tempWChar2 != NULL and checkIfInputIsUnique(tempChar, lastInput, symbolsCanRepeat))
+				lastInput += tempWChar2;
+			tempWChar2 = NULL;
 			break;
 		}
 
 		//check user2 input
 		if (lastInput.size() == 4) //Seperate into a function!!!
 		{
-			guess[13-lives].digits[0] = Byte(lastInput[0]);
-			guess[13-lives].digits[1] = Byte(lastInput[1]);
-			guess[13-lives].digits[2] = Byte(lastInput[2]);
-			guess[13-lives].digits[3] = Byte(lastInput[3]);
-			
-			tempStr =  sln.digits[0];
-			tempStr += sln.digits[1];
-			tempStr += sln.digits[2];
-			tempStr += sln.digits[3];
-			
+			guess[13-lives] = wstringToCode(lastInput);
+			tempStr = codeToWstring(sln);			
 			unsigned short int count = 0;
 
 			if (lastInput == tempStr)
 				gameStatus = 2;
 
-			for (size_t i = 0; i < 4; i++) //Num and pos init
+			for (size_t i = 0; i < 4; i++) //Num and pos for current guess init
 			{
 				NumAndPos[13 - lives][i] = false;
 				Num[13 - lives][i] = false;
@@ -226,13 +267,19 @@ int main()
 	switch (gameStatus)
 	{
 	case 1:
+		SetConsoleTextAttribute(hConsole, 158);
 		wcout << L"\nPLAYER 1 WINS!";
+		SetConsoleTextAttribute(hConsole, 7);
 		break;
 	case 2:
+		SetConsoleTextAttribute(hConsole, 94);
 		wcout << L"\nPLAYER 2 WINS!";
+		SetConsoleTextAttribute(hConsole, 7);
 		break;
 	case 3:
+		SetConsoleTextAttribute(hConsole, 192);
 		wcout << L"\nA PLAYER FORFEITED!";
+		SetConsoleTextAttribute(hConsole, 7);
 		break;
 	default:
 		break;
