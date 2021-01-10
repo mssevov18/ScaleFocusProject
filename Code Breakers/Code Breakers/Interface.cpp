@@ -282,13 +282,15 @@ void startMenu(unsigned short int &mode, bool &symbolsCanRepeat, bool &vsBot, HA
 		wcout << L"╠═════════════════╩═══════════════════╗\n";
 		wcout << L"║  C++ game by '✶ GitHub Cultists ✶'  ║\n";
 		wcout << L"╠═════════════════════════════════════╣\n";
-		wcout << L"║  add tutorial                       ║\n";
 		wcout << L"║  w/d - up/down                      ║\n";
 		wcout << L"║  Enter - Toggle setting             ║\n";
 		
 		printStep(-1, -3, L"Yes - This option is turned on   ", hConsole, true, false);
 		printStep(-1, -3, L"No - This option is turned off   ", hConsole, false, false);
 
+		wcout << L"║  For more information on how the    ║\n";
+		wcout << L"║  game is played, read the tutorial  ║\n";
+		wcout << L"║  in the game directory              ║\n";
 		wcout << L"╠═════════════════════════════════════╣\n";
 		wcout << L"║  Settings                           ║\n";
 		wcout << L"╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢\n";

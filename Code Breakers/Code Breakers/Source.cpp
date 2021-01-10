@@ -1,8 +1,8 @@
 ﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\
-|*	Sprint: 2																		   *|
-|*	Current Branch: Sprint-2-Making-the-game-(from-21.12.2020-till-03.01.2021)		   *|
-|*	Ver: 0.2.5																		   *|
-|*	Current Stage: Optimisation of game mechanics									   *|
+|*	Sprint: 3																		   *|
+|*	Current Branch: Sprint-3-Final-touches-(from-10.01.2021-till-12.01.2021)		   *|
+|*	Ver: 0.3.1																		   *|
+|*	Current Stage: Final touches and clean up    									   *|
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /* * * * * * * * * * * * * * * * * * * *\
@@ -13,8 +13,8 @@
 |*  is checked and filtered            *|
 |*                                     *|
 |*  Main menu                          *|
-|*                                     *|
 |*  Pause menu                         *|
+|*  Tutorial                           *|
 |*                                     *|
 \* * * * * * * * * * * * * * * * * * * */
 
@@ -22,17 +22,19 @@
 |*                                   *|
 |*          TODO                     *|
 |*                                   *|
-|* 1. Create the tutorial            *|
-|*                                   *|
-|* 2. Clean up the code              *|
+|* 1. Clean up the code              *|
 |*  - make comments                  *|
 |*  - rename variables to smt better *|
 |*  - remove any found bugs          *|
 |*  - clean up overused terms (mode) *|
 |*                                   *|
-|* 3. Cheat sheet?                   *|
+|* 2. Documentation - ReadMe.md      *|
 |*                                   *|
-|* 4. Add audio                      *|
+|* 3. Presentation - pptx            *|
+|*                                   *|
+|* 4. Add audio?                     *|
+|*                                   *|
+|* 3. Cheat sheet?                   *|
 |*                                   *|
 \* * * * * * * * * * * * * * * * * * */
 
