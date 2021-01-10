@@ -60,3 +60,52 @@ unsigned short int verifyUnSIntInRange(unsigned short int greaterThanOrEqual, un
 		return in;
 	return verifyUnSIntInRange(greaterThanOrEqual, lesserThanOrEqual, in);
 }
+
+bool* convertModeToBMode(unsigned short int mode)
+{
+	static bool bMode[4] = { false, false, false, false };
+
+	if (mode == 0)
+		bMode[0] = true;
+	else
+	{
+		for (int i = 1; i < 4; i++)
+		{
+			if (mode % 2 == 1)
+				bMode[i] = true;
+			mode /= 10;
+		}
+	}
+
+	return bMode;
+}
+
+unsigned short int convertBModeToMode(bool* bMode)
+{
+	unsigned short int mode = 0;
+
+	if (!bMode[0])
+	{
+		for (int i = 1; i < 4; i++)
+		{
+			if (bMode[i])
+				mode += 1 * int(pow(10, (i - 1)));
+		}
+	}
+
+	return mode;
+}
+
+/*
+
+*(bModePtr + i - 1)
+bModePtr[i - 1]
+bModePtr[i]
+
+
+bool* bModePtr;
+bool bMode[4];
+bModePtr = bMode;
+bModePtr = convertModeToBMode(mode);
+
+*/

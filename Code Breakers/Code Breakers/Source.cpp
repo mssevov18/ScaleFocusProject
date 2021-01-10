@@ -1,7 +1,7 @@
 ﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\
 |*	Sprint: 2																		   *|
 |*	Current Branch: Sprint-2-Making-the-game-(from-21.12.2020-till-03.01.2021)		   *|
-|*	Ver: 0.2.4																		   *|
+|*	Ver: 0.2.5																		   *|
 |*	Current Stage: Optimisation of game mechanics									   *|
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -12,23 +12,27 @@
 |*  The game is now playable, input    *|
 |*  is checked and filtered            *|
 |*                                     *|
+|*  Main menu                          *|
+|*                                     *|
+|*  Pause menu                         *|
+|*                                     *|
 \* * * * * * * * * * * * * * * * * * * */
 
 /* * * * * * * * * * * * * * * * * * *\
 |*                                   *|
 |*          TODO                     *|
 |*                                   *|
-|* 2. Make a main menu-WORKING ON IT *|
+|* 1. Create the tutorial            *|
 |*                                   *|
-|* 3. Make the different modes       *|
-|*                                   *|
-|* 4. Make the bot                   *|
-|*                                   *|
-|* 5. Clean up the code              *|
+|* 2. Clean up the code              *|
 |*  - make comments                  *|
 |*  - rename variables to smt better *|
+|*  - remove any found bugs          *|
+|*  - clean up overused terms (mode) *|
 |*                                   *|
+|* 3. Cheat sheet?                   *|
 |*                                   *|
+|* 4. Add audio                      *|
 |*                                   *|
 \* * * * * * * * * * * * * * * * * * */
 
@@ -57,8 +61,8 @@
 //Preprocessor directives, Using, Global Variables         |
 #include <iostream>
 #include <vector>
-#include <stdlib.h>
-#include <time.h>
+#include "stdlib.h"
+#include "time.h"
 #include "windows.h"
 #include "io.h"
 #include "fcntl.h"
@@ -95,6 +99,7 @@ int main()
 	6 - Settings menu,
 	7 - Pause screen
 	*/
+
 	unsigned short int gameStatus = 4; 
 	unsigned short int lives = 13, size = 0;
 	
@@ -106,6 +111,9 @@ int main()
 	bool NumAndPos[14][4], Num[14][4];
 
 	Code sln, guess[14];
+
+	for (char i = '0'; i < '4'; i++)
+		sln.digits[int(i) - 48] = i;
 
 	wstring tempStr = L"", lastInput = L"", inputFilter = L"";
 	char tempChar;
@@ -122,23 +130,6 @@ int main()
 	
 	startMenu(mode, symbolsCanRepeat, vsBot, hConsole);
 
-	/*
-	SetConsoleTextAttribute(hConsole, 7);
-	system("CLS");
-	//prettify this
-	wcout << L"Choose the mode:\n1 - Numbers 0 to 7;\n2 - All numbers;\n3 - All lowercase letters;\n4 - All uppercase letters;\n5 - All letters;\n6 - All numbers and only lowercase letters;\n7 - All numbers and only uppercase letters;\n8 - All numbers and all letters;\n";
-	mode = verifyUnSIntInRange(1, 8);
-	mode--;
-
-	//prettify this
-	wcout << L"\nCan a symbol be repeated (1/0): ";
-	wcin >> symbolsCanRepeat;
-
-	//prettify this
-	wcout << L"\nPlay against a bot (1/0): ";
-	wcin >> vsBot;
-	*/
-
 	inputFilter = getInputFilter(mode);
 	
 	if (vsBot)
@@ -148,21 +139,22 @@ int main()
 	}
 	else
 	{
-		/*UPDATE THIS*/
-		/*UPDATE THIS*/
-		/*UPDATE THIS*/
-		/*UPDATE THIS*/
-		/*UPDATE THIS*/
-		/*UPDATE THIS*/
-		/*UPDATE THIS*/
-
 		while (gameStatus == 4)
 		{
 			system("CLS");
 			//get user1 input
-			printInputMode(mode, symbolsCanRepeat, vsBot);
-			wcout << L"Choose the code (4 symbols): " << lastInput;
+			printInputMode(mode, symbolsCanRepeat, vsBot, hConsole);
+			SetConsoleTextAttribute(hConsole, 15);
+			wcout << L"Choose the code (";
+			SetConsoleTextAttribute(hConsole, 2);
+			wcout << L"4 symbols";
+			SetConsoleTextAttribute(hConsole, 15);
+			wcout << L"): ";
+			SetConsoleTextAttribute(hConsole, 9);
+			wcout << lastInput;
 			tempChar = _getch();
+			SetConsoleTextAttribute(hConsole, 7);
+
 			switch (tempChar)
 			{
 			case 8: //Backspace -> removes the last char of the cheat code
@@ -170,15 +162,20 @@ int main()
 				lastInput = tempStr.substr(0, tempStr.size() - 1);
 				break;
 			case 27: //Escape -> quits the program
-				lastInput = L"";
+				gameStatus = pauseMenu(4, -1, hConsole);
+				if (gameStatus == 3)
+					lastInput = L"";
 				break;
 			case 13: //Enter!
-				sln = wstringToCode(lastInput);
-				lastInput = L"";
-				gameStatus = 0;
+				if (lastInput.length() >= 4)
+				{
+					sln = wstringToCode(lastInput);
+					lastInput = L"";
+					gameStatus = 0;
+				}
 				break;
 			default:
-				tempWChar2 = checkIfInputIsAllowed(tempChar, inputFilter, mode);
+				tempWChar2 = returnIfInputIsAllowed(tempChar, inputFilter, mode);
 				if (tempChar >= 32 and tempWChar2 != NULL and checkIfInputIsUnique(tempChar, lastInput, symbolsCanRepeat))
 					lastInput += tempWChar2;
 				tempWChar2 = NULL;
@@ -196,11 +193,19 @@ int main()
 		//print map
 		printTable(sln, guess, lives, lastInput, NumAndPos, Num, !gameStatus, hConsole);
 
-		printInputMode(mode, symbolsCanRepeat, vsBot);
+		printInputMode(mode, symbolsCanRepeat, vsBot, hConsole);
 
 		//get user2 input
-		wcout << "Input guess (" << 13 - lives << "): " << lastInput;
+		SetConsoleTextAttribute(hConsole, 15);
+		wcout << "Input guess (";
+		SetConsoleTextAttribute(hConsole, 2);
+		wcout << 13 - lives;
+		SetConsoleTextAttribute(hConsole, 15);
+		wcout << "): ";
+		SetConsoleTextAttribute(hConsole, 9);
+		wcout << lastInput;
 		tempChar = _getch();
+		SetConsoleTextAttribute(hConsole, 7);
 		switch (tempChar)
 		{
 		case 8: //Backspace -> removes the last char of the cheat code
@@ -208,11 +213,12 @@ int main()
 			lastInput = tempStr.substr(0, tempStr.size() - 1);
 			break;
 		case 27: //Escape -> quits the program
-			lastInput = L"";
-			gameStatus = 3;
+			gameStatus = pauseMenu(0, 3, hConsole);
+			if (gameStatus == 3)
+				lastInput = L"";
 			break;
 		default:
-			tempWChar2 = checkIfInputIsAllowed(tempChar, inputFilter, mode);
+			tempWChar2 = returnIfInputIsAllowed(tempChar, inputFilter, mode);
 			if (tempChar >= 32 and tempWChar2 != NULL and checkIfInputIsUnique(tempChar, lastInput, symbolsCanRepeat))
 				lastInput += tempWChar2;
 			tempWChar2 = NULL;
@@ -278,28 +284,29 @@ int main()
 	}
 
 	system("CLS");
+
 	printTable(sln, guess, lives, lastInput, NumAndPos, Num, !gameStatus, hConsole);
+
+	printInputMode(mode, symbolsCanRepeat, vsBot, hConsole);
 
 	switch (gameStatus)
 	{
 	case 1:
 		SetConsoleTextAttribute(hConsole, 158);
 		wcout << L"\nPLAYER 1 WINS!";
-		SetConsoleTextAttribute(hConsole, 7);
 		break;
 	case 2:
 		SetConsoleTextAttribute(hConsole, 94);
 		wcout << L"\nPLAYER 2 WINS!";
-		SetConsoleTextAttribute(hConsole, 7);
 		break;
 	case 3:
 		SetConsoleTextAttribute(hConsole, 192);
 		wcout << L"\nA PLAYER FORFEITED!";
-		SetConsoleTextAttribute(hConsole, 7);
 		break;
 	default:
 		break;
 	}
+	SetConsoleTextAttribute(hConsole, 7);
 }
  
 //Function Definition                                      |

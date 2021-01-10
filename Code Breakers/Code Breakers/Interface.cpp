@@ -88,24 +88,19 @@ wstring getInputFilter(unsigned short int mode)
 	//+10 - lowercase letters
 	//+100 - uppercase letters
 
+	bool* bModePtr;
+	bool bMode[4];
+	bModePtr = bMode;
+	bModePtr = convertModeToBMode(mode);
 
-
-	if (mode == 0)
+	if (bModePtr[0])
 		return L"01234567";
-
 	wstring filter = L"";
-	
-	if (mode % 2 == 1)
+	if (bModePtr[1])
 		filter = L"0123456789";
-
-	mode /= 10;
-
-	if (mode % 2 == 1)
+	if (bModePtr[2])
 		filter += L"qwertyuiopasdfghjklzxcvbnm";
-
-	mode /= 10;
-
-	if (mode % 2 == 1)
+	if (bModePtr[3])
 		filter += L"QWERTYUIOPASDFGHJKLZXCVBNM";
 
 	//switch (mode)
@@ -141,7 +136,7 @@ wstring getInputFilter(unsigned short int mode)
 	return filter;
 }
 
-wchar_t checkIfInputIsAllowed(char in, wstring filter, unsigned short int mode)
+wchar_t returnIfInputIsAllowed(char in, wstring filter, unsigned short int mode)
 {
 	for (size_t i = 0; i < filter.length(); i++)
 	{
@@ -152,18 +147,20 @@ wchar_t checkIfInputIsAllowed(char in, wstring filter, unsigned short int mode)
 	return NULL;
 }
 
-bool checkIfInputIsUnique(char in, wstring lastInput, bool symbolsCanRepeat)
+bool checkIfInputIsUnique(wchar_t in, wstring lastInput, bool symbolsCanRepeat)
 {
+	if (symbolsCanRepeat)
+		return true;
+
 	for (size_t j = 0; j < lastInput.length(); j++)
 	{
 		if (lastInput[j] == NULL)
 			continue;
 
 		if (lastInput[j] == in)
-		{
 			return false;
-		}
 	}
+
 	return true;
 }
 
@@ -182,97 +179,62 @@ wstring getBotInput(wstring filter, bool symbolsCanRepeat)
 	return out;
 }
 
-void printInputMode(unsigned short int mode, bool symbolsCanRepeat, bool vsBot) 
+void printInputMode(unsigned short int mode, bool symbolsCanRepeat, bool vsBot, HANDLE hConsole)
 {
 	//ADD COLOURS!!!
-	//ADD COLOURS!!!
-	//ADD COLOURS!!!
-	//ADD COLOURS!!!
-	//ADD COLOURS!!!
-	wcout << "Input Mode: ";
 
-	bool bMode[4] = { false,false,false,false };
+	SetConsoleTextAttribute(hConsole, 11);
+	wcout << "Input Type: ";
+
+	bool* bModePtr;
+	bool bMode[4];
+	bModePtr = bMode;
+	bModePtr = convertModeToBMode(mode);
+
 	int amount = 1;
-	unsigned short int mem = mode;
-	if (mode == 0) //Seperate into a function?
-		bMode[0] = true;
-	else
-	{
-		for (int i = 1; i < 4; i++)
-		{
-			if (mode % 2 == 1)
-				bMode[i] = true;
-			mode /= 10;
-		}
 
-		//if (mode % 2 == 1)
-		//	bMode[1] = true;
-		//mode /= 10;
-		//if (mode % 2 == 1)
-		//	bMode[2] = true;
-		//mode /= 10;
-		//if (mode % 2 == 1)
-		//	bMode[3] = true;
+	int count = 0;
+	wstring sMode[4];
+
+	if (bModePtr[0])
+		sMode[count++] = L"Numbers 0 to 7 only";
+	if (bModePtr[1])
+		sMode[count++] = L"All numbers";
+	if (bModePtr[2])
+		sMode[count++] = L"All lowercase letters";
+	if (bModePtr[3])
+		sMode[count++] = L"All uppercase letters";
+
+	for (int i = 0; i < count; i++)
+	{
+		SetConsoleTextAttribute(hConsole, 6);
+		wcout << sMode[i];
+		if (i + 1 != count)
+		{
+			SetConsoleTextAttribute(hConsole, 11);
+			wcout << " and ";
+		}
 	}
 
-	wcout << '\n';
-
-	mode = mem;
-	if (mode == 0)
-		wcout << "Numbers 0 to 7 only";
-	if (mode % 2 == 1)
-		wcout << "All numbers\t";
-	mode /= 10;
-	if (mode % 2 == 1)
-		wcout << "All lowercase letters\t";
-	mode /= 10;
-	if (mode % 2 == 1)
-		wcout << "All uppercase letters\t";
-
-	wcout << '\n';
-
-	//switch (mode)
-	//{
-	//case 0:
-	//	wcout << "Numbers 0 to 7\n";
-	//	break;
-	//case 1:
-	//	wcout << "All numbers\n";
-	//	break;
-	//case 2:
-	//	wcout << "All lowercase letters\n";
-	//	break;
-	//case 3:
-	//	wcout << "All uppercase letters\n";
-	//	break;
-	//case 4:
-	//	wcout << "All letters\n";
-	//	break;
-	//case 5:
-	//	wcout << "All numbers and only lowercase letters\n";
-	//	break;
-	//case 6:
-	//	wcout << "All numbers and only uppercase letters\n";
-	//	break;
-	//case 7:
-	//	wcout << "All numbers and all letters\n";
-	//	break;
-	//default:
-	//	break;
-	//}
-
-	wcout << L"Symbols ";
+	SetConsoleTextAttribute(hConsole, 11);
+	wcout << L"\nSymbols ";
+	SetConsoleTextAttribute(hConsole, 6);
 	if (symbolsCanRepeat)
 		wcout << L"can";
 	else
 		wcout << L"can't";
-	wcout << L" repeat\n";
+	SetConsoleTextAttribute(hConsole, 11);
+	wcout << L" repeat";
 	
-	wcout << L"Playing against ";
+	SetConsoleTextAttribute(hConsole, 11);
+	wcout << L"\nPlaying against ";
+	SetConsoleTextAttribute(hConsole, 6);
 	if (vsBot)
 		wcout << L"a Bot\n";
 	else
 		wcout << L"another Player\n";
+	
+	SetConsoleTextAttribute(hConsole, 7);
 }
 
 void startMenu(unsigned short int &mode, bool &symbolsCanRepeat, bool &vsBot, HANDLE hConsole)
@@ -281,26 +243,17 @@ void startMenu(unsigned short int &mode, bool &symbolsCanRepeat, bool &vsBot, HA
 	int activeStep = 0;
 	char action = NULL;
 	int count = 0;
-	bool isActivated[11];
-	bool bMode[4] = { false,false,false,false };
+	bool isActivated[7];
+
 
 	mode = 0;
 	symbolsCanRepeat = false;
 	vsBot = false;
 
-	if (mode == 0) //Seperate into a function?
-		bMode[0] = true;
-	else
-	{
-		if (mode % 2 == 1)
-			bMode[1] = true;
-		mode /= 10;
-		if (mode % 2 == 1)
-			bMode[2] = true;
-		mode /= 10;
-		if (mode % 2 == 1)
-			bMode[3] = true;
-	}
+	bool* bModePtr;
+	bool bMode[4];
+	bModePtr = bMode;
+	bModePtr = convertModeToBMode(mode);
 
 	wstring steps[] = {
 		L"Play against a bot?    -No-/╼Yes╾",
@@ -314,8 +267,8 @@ void startMenu(unsigned short int &mode, bool &symbolsCanRepeat, bool &vsBot, HA
 
 	isActivated[0] = vsBot;
 	for (int i = 1; i < 5; i++)
-		isActivated[i] = bMode[i - 1];
-	isActivated[5] = symbolsCanRepeat;
+		isActivated[i] = bModePtr[i - 1];
+ 	isActivated[5] = symbolsCanRepeat;
 	isActivated[6] = ready;
 
 	SetConsoleTextAttribute(hConsole, 7);
@@ -331,27 +284,31 @@ void startMenu(unsigned short int &mode, bool &symbolsCanRepeat, bool &vsBot, HA
 		wcout << L"╠═════════════════════════════════════╣\n";
 		wcout << L"║  add tutorial                       ║\n";
 		wcout << L"║  w/d - up/down                      ║\n";
-		wcout << L"║  Enter - Cycle between options      ║\n";
+		wcout << L"║  Enter - Toggle setting             ║\n";
+		
+		printStep(-1, -3, L"Yes - This option is turned on   ", hConsole, true, false);
+		printStep(-1, -3, L"No - This option is turned off   ", hConsole, false, false);
+
 		wcout << L"╠═════════════════════════════════════╣\n";
 		wcout << L"║  Settings                           ║\n";
 		wcout << L"╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢\n";
 
-		printStep(count, activeStep, steps, hConsole, isActivated[count]);
+		count = printStep(count, activeStep, steps[count], hConsole, isActivated[count]);
 
 		wcout << L"╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢\n";
 		wcout << L"║  Allowed symbols?                   ║\n";
 
 		for (int i = 1; i < 5; i++)
-			printStep(count, activeStep, steps, hConsole, isActivated[count]);
+			count = printStep(count, activeStep, steps[count], hConsole, isActivated[count]);
 
 		wcout << L"╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢\n";
 
-		printStep(count, activeStep, steps, hConsole, isActivated[count]);
+		count = printStep(count, activeStep, steps[count], hConsole, isActivated[count]);
 
 		wcout << L"╠═════════════════════════════════════╣\n";
 
-		printStep(count, activeStep, steps, hConsole, isActivated[count], true);
-		
+		printStep(count, activeStep, steps[count], hConsole, isActivated[count], true, 150);
+
 		wcout << L"╚═════════════════════════════════════╝";
 	
 		action = _getch();
@@ -386,54 +343,44 @@ void startMenu(unsigned short int &mode, bool &symbolsCanRepeat, bool &vsBot, HA
 
 		vsBot = isActivated[0];
 		for (int i = 1; i < 5; i++)
-			bMode[i - 1] = isActivated[i];
+			bModePtr[i - 1] = isActivated[i];
 		symbolsCanRepeat = isActivated[5];
 		ready = isActivated[6];
 	}
 	
-	if (bMode[0])
-		mode = 0;
-	else
-	{
-		for (int i = 1; i < 4; i++)
-		{
-			if (bMode[i])
-				mode += 1 * int(pow(10, (i - 1)));
-		}
-		//OBSOLETE
-		//if (bMode[1])
-		//	mode += 1;
-		//if (bMode[2])
-		//	mode += 10;
-		//if (bMode[3])
-		//	mode += 100;
-	}
+	mode = convertBModeToMode(bModePtr);
 
 }
 
-void printStep(int& count, int activeStep, wstring steps[], HANDLE hConsole, bool isActivated, bool isSpecial)
+int printStep(int count, int activeStep, wstring step, HANDLE hConsole, bool isActivated, bool isSpecial, int specialClr, bool printBorders)
 {
 	if (count == activeStep)
 		SetConsoleTextAttribute(hConsole, 143);
 	else
 		SetConsoleTextAttribute(hConsole, 7);
-	wcout << L"║  ";
+	if (printBorders)
+		wcout << L"║  ";
 	if (isSpecial)
-		SetConsoleTextAttribute(hConsole, 150);
+		SetConsoleTextAttribute(hConsole, specialClr);
 	else if (isActivated)
 		SetConsoleTextAttribute(hConsole, 47);
 	else if (!isActivated)
 		SetConsoleTextAttribute(hConsole, 64);
-	wcout << steps[count++];
-	if (count - 1 == activeStep)
+	wcout << step;
+	if (count == activeStep)
 		SetConsoleTextAttribute(hConsole, 143);
 	else
 		SetConsoleTextAttribute(hConsole, 7);
-	wcout << L"  ║\n";
-		SetConsoleTextAttribute(hConsole, 7);
+	if (printBorders)
+		wcout << L"  ║";
+
+	wcout << L'\n';
+	SetConsoleTextAttribute(hConsole, 7);
+	
+	return (count + 1);
 }
 
-void pauseMenu()
+unsigned short int pauseMenu(int continueVal, int exitVal, HANDLE hConsole)
 {
 	//CLEAR SCREEN
 	//print a grey? bg
@@ -441,6 +388,43 @@ void pauseMenu()
 	//Give options to stop the game
 	//idk?
 
+	bool paused = true;
+	char action = NULL;
+	wstring offset = L"\t\t\t";
+	int clr = 112;
+	while (paused)
+	{
+		SetConsoleTextAttribute(hConsole, 143);
+		system("CLS");
+		wcout << "\n\n\n\n";
+
+		wcout << offset << "\t";
+		printStep(-1, -3, L"PAUSED", hConsole, false, true, clr, false);
+		wcout << offset;
+		printStep(-1, -3, L"Press Enter to continue", hConsole, false, true, clr, false);
+		if (exitVal != -1)
+		{
+			wcout << offset;
+			printStep(-1, -3, L"Press Escape to end the game", hConsole, false, true, clr, false);
+		}
+
+		action = _getch();
+		SetConsoleTextAttribute(hConsole, 7);
+		switch (action)
+		{
+		case 13: //Enter
+			return continueVal;
+		case 27: //Escape
+			if (exitVal != -1)
+				return exitVal;
+		default:
+			break;
+		}
+
+	}
+	
+	SetConsoleTextAttribute(hConsole, 7);
+	return continueVal;
 }
 
 /*
@@ -590,5 +574,29 @@ No│Yes
 ╠═════════════════════════════════════╣
 ║            S  T  A  R  T            ║
 ╚═════════════════════════════════════╝
+
+╔═════════════════╗
+║  Code Breakers  ║
+╠═════════════════╩═══════════════════╗
+║  C++ game by "✶ GitHub Cultists ✶"  ║
+╠═════════════════════════════════════╣
+║  add tutorial                       ║
+║  w/d - up/down                      ║
+║  Enter - Cycle between options      ║
+╠═════════════════════════════════════╣
+║  Settings                           ║
+╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢
+║  Play against a bot?    -No-/╼Yes╾  ║ 0
+╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢
+║  Allowed symbols?                   ║
+║    ○ numbers (0-7) only             ║ 1
+║    ○ all numbers                    ║ 2
+║    ○ lowercase letters              ║ 3
+║    ○ uppercase letters              ║ 4
+╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢
+║  Symbols can repeat?    -No-/╼Yes╾  ║ 5
+╠═════════════════════════════════════╣
+║            S  T  A  R  T            ║ 6
+╚═════════════════════════════════════╝ //cap
 
 */

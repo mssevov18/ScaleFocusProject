@@ -36,3 +36,9 @@ wstring codeToWstring(Code in);
 
 //Verify unsigned short int in a range
 unsigned short int verifyUnSIntInRange(unsigned short int greaterThanOrEqual, unsigned short int lesserThanOrEqual, unsigned short int in = NULL);
+
+//mode to boolMode
+bool* convertModeToBMode(unsigned short int mode);
+
+//boolMode to mode
+unsigned short int convertBModeToMode(bool* bMode);

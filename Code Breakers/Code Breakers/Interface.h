@@ -10,7 +10,7 @@ void printTable(Code sln, Code guess[], unsigned short int lives, wstring lastIn
 wstring getInputFilter(unsigned short int mode);
 
 //Check if the char is a part of the allowed characters
-wchar_t checkIfInputIsAllowed(char in, wstring filter, unsigned short  int mode = 0);
+wchar_t returnIfInputIsAllowed(char in, wstring filter, unsigned short  int mode = 0);
 
 //Mode
 //0 - numbers (0-7) only
@@ -22,8 +22,14 @@ wchar_t checkIfInputIsAllowed(char in, wstring filter, unsigned short  int mode 
 //6 - uppercase letters and numbers
 //7 - letters and numbers
 
+//NEW MODE
+//=0 - numbers (0-7) only
+//+1 - numbers 
+//+10 - lowercase letters
+//+100 - uppercase letters
+
 //Check if pl input is repeating
-bool checkIfInputIsUnique(char in, wstring lastInput, bool symbolsCanRepeat);
+bool checkIfInputIsUnique(wchar_t in, wstring lastInput, bool symbolsCanRepeat);
 
 //Make the different modes - vs ai/pl
 wstring getBotInput(wstring filter, bool symbolsCanRepeat);
@@ -31,36 +37,12 @@ wstring getBotInput(wstring filter, bool symbolsCanRepeat);
 //start menu
 void startMenu(unsigned short int& mode, bool& symbolsCanRepeat, bool& vsBot, HANDLE hConsole = NULL);
 
-void printStep(int& count, int activeStep, wstring steps[], HANDLE hConsole, bool isActivated = false, bool isSpecial = false);
+int printStep(int count, int activeStep, wstring step, HANDLE hConsole = NULL, bool isActivated = false, bool isSpecial = false, int specialClr = 7, bool printBorders = true);
 
 //pause menu
-void pauseMenu();
+unsigned short int pauseMenu(int continueVal, int exitVal, HANDLE hConsole = NULL);
 
 //print mode
-void printInputMode(unsigned short int mode, bool symbolsCanRepeat, bool vsBot);
+void printInputMode(unsigned short int mode, bool symbolsCanRepeat, bool vsBot, HANDLE hConsole = NULL);
 
-/*
-╔═════════════════╗
-║  Code Breakers  ║
-╠═════════════════╩═══════════════════╗
-║  C++ game by "✶ GitHub Cultists ✶"  ║
-╠═════════════════════════════════════╣
-║  add tutorial                       ║
-║  w/d - up/down                      ║
-║  Enter - Cycle between options      ║
-╠═════════════════════════════════════╣
-║  Settings                           ║
-╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢
-║  Play against a bot?    -No-/╼Yes╾  ║ 0
-╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢
-║  Allowed symbols?                   ║
-║    ○ numbers (0-7) only             ║ 1
-║    ○ all numbers                    ║ 2
-║    ○ lowercase letters              ║ 3
-║    ○ uppercase letters              ║ 4
-╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢
-║  Symbols can repeat?    -No-/╼Yes╾  ║ 5
-╠═════════════════════════════════════╣
-║            S  T  A  R  T            ║ 6
-╚═════════════════════════════════════╝ //cap
-*/
+//tutorial
