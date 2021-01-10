@@ -1,7 +1,7 @@
 ﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\
 |*	Sprint: 2																		   *|
 |*	Current Branch: Sprint-2-Making-the-game-(from-21.12.2020-till-03.01.2021)		   *|
-|*	Ver: 0.2.3																		   *|
+|*	Ver: 0.2.4																		   *|
 |*	Current Stage: Optimisation of game mechanics									   *|
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -10,7 +10,7 @@
 |*      What's new!                    *|
 |*                                     *|
 |*  The game is now playable, input    *|
-|*  is !not checked and filtered       *|
+|*  is checked and filtered            *|
 |*                                     *|
 \* * * * * * * * * * * * * * * * * * * */
 
@@ -18,7 +18,7 @@
 |*                                   *|
 |*          TODO                     *|
 |*                                   *|
-|* 2. Make a main menu               *|
+|* 2. Make a main menu-WORKING ON IT *|
 |*                                   *|
 |* 3. Make the different modes       *|
 |*                                   *|
@@ -119,6 +119,12 @@ int main()
 	
 	SetConsoleTextAttribute(hConsole, 7);
 	system("CLS");
+	
+	startMenu(mode, symbolsCanRepeat, vsBot, hConsole);
+
+	/*
+	SetConsoleTextAttribute(hConsole, 7);
+	system("CLS");
 	//prettify this
 	wcout << L"Choose the mode:\n1 - Numbers 0 to 7;\n2 - All numbers;\n3 - All lowercase letters;\n4 - All uppercase letters;\n5 - All letters;\n6 - All numbers and only lowercase letters;\n7 - All numbers and only uppercase letters;\n8 - All numbers and all letters;\n";
 	mode = verifyUnSIntInRange(1, 8);
@@ -131,20 +137,30 @@ int main()
 	//prettify this
 	wcout << L"\nPlay against a bot (1/0): ";
 	wcin >> vsBot;
+	*/
 
 	inputFilter = getInputFilter(mode);
 	
 	if (vsBot)
 	{
-		sln = wstringToCode(getBotInput(inputFilter));
+		sln = wstringToCode(getBotInput(inputFilter, symbolsCanRepeat));
 		gameStatus = 0;
 	}
 	else
 	{
+		/*UPDATE THIS*/
+		/*UPDATE THIS*/
+		/*UPDATE THIS*/
+		/*UPDATE THIS*/
+		/*UPDATE THIS*/
+		/*UPDATE THIS*/
+		/*UPDATE THIS*/
+
 		while (gameStatus == 4)
 		{
 			system("CLS");
 			//get user1 input
+			printInputMode(mode, symbolsCanRepeat, vsBot);
 			wcout << L"Choose the code (4 symbols): " << lastInput;
 			tempChar = _getch();
 			switch (tempChar)
