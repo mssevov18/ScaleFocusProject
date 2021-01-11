@@ -1,4 +1,4 @@
-﻿//Preprocessor directives, Using, etc     |>-
+﻿//# Preprocessor directives, Using, etc     |>-
 #include <iostream>
 #include "Miscellaneous.h"
 #include "Interface.h"
@@ -9,9 +9,9 @@
 
 using namespace std;
 
-//Function Definition                     |>-
+//# Function Definition                     |>-
 
-void printTable(Code sln, Code guess[], unsigned short int lives, wstring lastInput, bool NumAndPos[14][4], bool Num[14][4], bool showSln, HANDLE hConsole)
+void printTable(Code sln, Code guess[], Byte lives, wstring lastInput, bool NumAndPos[14][4], bool Num[14][4], bool showSln, HANDLE hConsole)
 {
 	SetConsoleTextAttribute(hConsole, 7); //Black bg; white txt
 	wcout << L"                   ┏━━━━━━━━━━━━━━┓\n                   ┃  ";
@@ -32,7 +32,7 @@ void printTable(Code sln, Code guess[], unsigned short int lives, wstring lastIn
 	wcout << L"┃   Positions  ┃   ┃   Two's      ┃   ┃   symbols    ┃\n";
 	wcout << L"┃   & symbols  ┃   ┃   Guesses    ┃   ┃   only       ┃\n";
 	wcout << L"┣━━━━━━━━━━━━━━┫   ┣━━━━━━━━━━━━━━┫   ┣━━━━━━━━━━━━━━┫\n";
-	for (unsigned short int i = 0; i < 13 - lives; i++) //Maybe add a counter to pl2's guesses?
+	for (Byte i = 0; i < 13 - lives; i++)
 	{
 		wcout << L"┃  ";
 		SetConsoleTextAttribute(hConsole, 10);
@@ -52,7 +52,7 @@ void printTable(Code sln, Code guess[], unsigned short int lives, wstring lastIn
 		}
 		SetConsoleTextAttribute(hConsole, 7); 
 		wcout << L"┃   ┃  ";
-		SetConsoleTextAttribute(hConsole, 13); //change to red
+		SetConsoleTextAttribute(hConsole, 13);
 		for (size_t j = 0; j < 4; j++)
 		{
 			if(Num[i][j]) 
@@ -71,18 +71,9 @@ void printTable(Code sln, Code guess[], unsigned short int lives, wstring lastIn
 	wcout << L"┗━━━━━━━━━━━━━━┛   ┗━━━━━━━━━━━━━━┛   ┗━━━━━━━━━━━━━━┛\n";
 }
 
-wstring getInputFilter(unsigned short int mode)
+wstring getInputFilter(Byte mode)
 {
-	//Mode
-	//0 - numbers (0-7) only
-	//1 - numbers only
-	//2 - lowercase letters only
-	//4 - letters only
-	//5 - lowercase letters and numbers
-	//6 - uppercase letters and numbers
-	//7 - letters and numbers
-
-	//NEW MODE
+	//mode
 	//=0 - numbers (0-7) only
 	//+1 - numbers 
 	//+10 - lowercase letters
@@ -103,40 +94,10 @@ wstring getInputFilter(unsigned short int mode)
 	if (bModePtr[3])
 		filter += L"QWERTYUIOPASDFGHJKLZXCVBNM";
 
-	//switch (mode)
-	//{
-	//case 0:
-	//	filter = L"01234567";
-	//	break;
-	//case 1:
-	//	filter = L"0123456789";
-	//	break;
-	//case 2:
-	//	filter = L"qwertyuiopasdfghjklzxcvbnm";
-	//	break;
-	//case 3:
-	//	filter = L"QWERTYUIOPASDFGHJKLZXCVBNM";
-	//	break;
-	//case 4:
-	//	filter = L"qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-	//	break;
-	//case 5:
-	//	filter = L"0123456789qwertyuiopasdfghjklzxcvbnm";
-	//	break;
-	//case 6:
-	//	filter = L"0123456789QWERTYUIOPASDFGHJKLZXCVBNM";
-	//	break;
-	//case 7:
-	//	filter = L"0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-	//	break;
-	//default:
-	//	break;
-	//}
-
 	return filter;
 }
 
-wchar_t returnIfInputIsAllowed(char in, wstring filter, unsigned short int mode)
+wchar_t returnIfInputIsAllowed(char in, wstring filter, Byte mode)
 {
 	for (size_t i = 0; i < filter.length(); i++)
 	{
@@ -179,10 +140,8 @@ wstring getBotInput(wstring filter, bool symbolsCanRepeat)
 	return out;
 }
 
-void printInputMode(unsigned short int mode, bool symbolsCanRepeat, bool vsBot, HANDLE hConsole)
+void printInputMode(Byte mode, bool symbolsCanRepeat, bool vsBot, HANDLE hConsole)
 {
-	//ADD COLOURS!!!
-
 	SetConsoleTextAttribute(hConsole, 11);
 	wcout << "Input Type: ";
 
@@ -237,7 +196,7 @@ void printInputMode(unsigned short int mode, bool symbolsCanRepeat, bool vsBot, 
 	SetConsoleTextAttribute(hConsole, 7);
 }
 
-void startMenu(unsigned short int &mode, bool &symbolsCanRepeat, bool &vsBot, HANDLE hConsole)
+void startMenu(Byte &mode, bool &symbolsCanRepeat, bool &vsBot, HANDLE hConsole)
 {
 	bool ready = false;
 	int activeStep = 0;
@@ -382,14 +341,8 @@ int printStep(int count, int activeStep, wstring step, HANDLE hConsole, bool isA
 	return (count + 1);
 }
 
-unsigned short int pauseMenu(int continueVal, int exitVal, HANDLE hConsole)
+Byte pauseMenu(int continueVal, int exitVal, HANDLE hConsole)
 {
-	//CLEAR SCREEN
-	//print a grey? bg
-	//say "GAME PAUSED"
-	//Give options to stop the game
-	//idk?
-
 	bool paused = true;
 	char action = NULL;
 	wstring offset = L"\t\t\t";
