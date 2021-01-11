@@ -4,8 +4,7 @@ using namespace std;
 
 //# Structures and custom types             |>-
 
-using Byte = unsigned char; 
-//capital 'B' due to redefinition issues
+using Byte = unsigned char; //capital 'B' due to redefinition issues
 
 struct Code
 {

@@ -1,7 +1,7 @@
 ﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\
 |*	Sprint: 3																		   *|
 |*	Current Branch: Sprint-3-Final-touches-(from-10.01.2021-till-12.01.2021)		   *|
-|*	Ver: 0.3.2																		   *|
+|*	Ver: 0.3.3																		   *|
 |*	Current Stage: Final touches and clean up    									   *|
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -27,12 +27,7 @@
 |*  - rename variables to smt better *|
 |*  - remove any found bugs          *|
 |*  - clean up overused terms (mode) *|
-|*  - generalise variables to a few  *|
-|*    types (byte, size_t, etc...)   *|
-|*  - move functions to the proper   *|
-|*    header file                    *|
 |*  - add bookmarks                  *|
-|*  - add comment headers            *|
 |*                                   *|
 |* 2. Documentation - ReadMe.md      *|
 |*                                   *|
@@ -145,6 +140,7 @@ int main()
 
 //## Set up and start of the game
 
+	//### Print the main menu
 	system("CLS");
 	
 	SetConsoleTextAttribute(hConsole, 7);
@@ -154,6 +150,7 @@ int main()
 	
 	if (vsBot)
 	{
+		//### Get input from the bot
 		sln = wstringToCode(getBotInput(inputFilter, symbolsCanRepeat)); //sln is a random wstring, it follows the rules
 		gameStatus = 0;
 	}
@@ -161,6 +158,7 @@ int main()
 	{
 		while (gameStatus == 4)
 		{
+			//### Get input from player 1
 			system("CLS");
 			printInputMode(mode, symbolsCanRepeat, vsBot, hConsole);
 			

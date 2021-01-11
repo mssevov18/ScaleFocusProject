@@ -21,9 +21,7 @@ void printTable(Code sln, Code guess[], Byte lives, wstring lastInput, bool NumA
 	else
 	{
 		for (size_t i = 0; i < 4; i++)
-		{
 			wcout << char(sln.digits[i]) << L"  "; //If show solution is true -> show the solution
-		}
 	}
 	SetConsoleTextAttribute(hConsole, 7);
 	wcout << L"┃\n                   ┗━━━━━━━━━━━━━━┛\n";
@@ -47,9 +45,7 @@ void printTable(Code sln, Code guess[], Byte lives, wstring lastInput, bool NumA
 		wcout << L"┃   ┃  ";
 		SetConsoleTextAttribute(hConsole, 11); 
 		for (size_t j = 0; j < 4; j++)
-		{
 			wcout << char(guess[i].digits[j]) << "  ";
-		}
 		SetConsoleTextAttribute(hConsole, 7); 
 		wcout << L"┃   ┃  ";
 		SetConsoleTextAttribute(hConsole, 13);
@@ -112,12 +108,10 @@ bool checkIfInputIsUnique(wchar_t in, wstring lastInput, bool symbolsCanRepeat)
 {
 	if (symbolsCanRepeat)
 		return true;
-
 	for (size_t j = 0; j < lastInput.length(); j++)
 	{
 		if (lastInput[j] == NULL)
 			continue;
-
 		if (lastInput[j] == in)
 			return false;
 	}
@@ -129,14 +123,17 @@ wstring getBotInput(wstring filter, bool symbolsCanRepeat)
 {
 	wstring out = L"";
 	wchar_t test = NULL;
+
 	for (size_t i = 0; i < 4; i++)
 	{
 		test = filter[rand() % filter.length()];
+		
 		if (checkIfInputIsUnique(test, out, symbolsCanRepeat))
 			out += test;
 		else
 			i--;
 	}
+
 	return out;
 }
 
@@ -177,16 +174,19 @@ void printInputMode(Byte mode, bool symbolsCanRepeat, bool vsBot, HANDLE hConsol
 
 	SetConsoleTextAttribute(hConsole, 11);
 	wcout << L"\nSymbols ";
+	
 	SetConsoleTextAttribute(hConsole, 6);
 	if (symbolsCanRepeat)
 		wcout << L"can";
 	else
 		wcout << L"can't";
+	
 	SetConsoleTextAttribute(hConsole, 11);
 	wcout << L" repeat";
 	
 	SetConsoleTextAttribute(hConsole, 11);
 	wcout << L"\nPlaying against ";
+	
 	SetConsoleTextAttribute(hConsole, 6);
 	if (vsBot)
 		wcout << L"a Bot\n";
@@ -204,7 +204,6 @@ void startMenu(Byte &mode, bool &symbolsCanRepeat, bool &vsBot, HANDLE hConsole)
 	int count = 0;
 	bool isActivated[7];
 
-
 	mode = 0;
 	symbolsCanRepeat = false;
 	vsBot = false;
@@ -215,12 +214,12 @@ void startMenu(Byte &mode, bool &symbolsCanRepeat, bool &vsBot, HANDLE hConsole)
 	bModePtr = convertModeToBMode(mode);
 
 	wstring steps[] = {
-		L"Play against a bot?    -No-/╼Yes╾",
-		L"  ○ numbers (0-7) only           ",
-		L"  ○ numbers                      ",
-		L"  ○ lowercase letters            ",
-		L"  ○ uppercase letters            ",
-		L"Symbols can repeat?    -No-/╼Yes╾",
+		L"Play against a bot?    ",
+		L" numbers (0-7) only           ",
+		L" numbers                      ",
+		L" lowercase letters            ",
+		L" uppercase letters            ",
+		L"Symbols can repeat?    ",
 		L"          S  T  A  R  T          "
 	};
 
@@ -254,17 +253,17 @@ void startMenu(Byte &mode, bool &symbolsCanRepeat, bool &vsBot, HANDLE hConsole)
 		wcout << L"║  Settings                           ║\n";
 		wcout << L"╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢\n";
 
-		count = printStep(count, activeStep, steps[count], hConsole, isActivated[count]);
+		count = printStep(count, activeStep, steps[count] + (isActivated[count] ? L"    /╼Yes╾" : L"-No-/     "), hConsole, isActivated[count]);
 
 		wcout << L"╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢\n";
 		wcout << L"║  Allowed symbols?                   ║\n";
 
 		for (int i = 1; i < 5; i++)
-			count = printStep(count, activeStep, steps[count], hConsole, isActivated[count]);
+			count = printStep(count, activeStep, (isActivated[count] ? L"●" : L"○") + steps[count], hConsole, isActivated[count], false, 7, true, L"  ");
 
 		wcout << L"╟──┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄──╢\n";
 
-		count = printStep(count, activeStep, steps[count], hConsole, isActivated[count]);
+		count = printStep(count, activeStep, steps[count] + (isActivated[count] ? L"    /╼Yes╾" : L"-No-/     "), hConsole, isActivated[count]);
 
 		wcout << L"╠═════════════════════════════════════╣\n";
 
@@ -310,17 +309,16 @@ void startMenu(Byte &mode, bool &symbolsCanRepeat, bool &vsBot, HANDLE hConsole)
 	}
 	
 	mode = convertBModeToMode(bModePtr);
-
 }
 
-int printStep(int count, int activeStep, wstring step, HANDLE hConsole, bool isActivated, bool isSpecial, int specialClr, bool printBorders)
+int printStep(int count, int activeStep, wstring step, HANDLE hConsole, bool isActivated, bool isSpecial, int specialClr, bool printBorders, wstring offset)
 {
 	if (count == activeStep)
 		SetConsoleTextAttribute(hConsole, 143);
 	else
 		SetConsoleTextAttribute(hConsole, 7);
 	if (printBorders)
-		wcout << L"║  ";
+		wcout << L"║  " << offset;
 	if (isSpecial)
 		SetConsoleTextAttribute(hConsole, specialClr);
 	else if (isActivated)
@@ -375,7 +373,6 @@ Byte pauseMenu(int continueVal, int exitVal, HANDLE hConsole)
 		default:
 			break;
 		}
-
 	}
 	
 	SetConsoleTextAttribute(hConsole, 7);
